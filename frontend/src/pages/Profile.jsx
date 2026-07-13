@@ -15,17 +15,22 @@ import { GoPencil } from "react-icons/go";
 import Button from '../Components/Button';
 import avatar from "../assets/user.png"
 import InputField from '../Components/InputField';
+import uploadImage from '../utils/uploadImage';
+import { updateProfile } from 'firebase/auth';
+import { auth } from '../../firebase';
 const Profile = () => 
 {
   const [trips,setTrips] = useState([]);
   const [avatarForm,setAvatarForm] = useState(false);
-  const [image,setImage] = useState("")
+  const [image,setImage] = useState(null)
   const [localWhishList,setLocalWhishList] = useState([]);
+  const [uploading,setUploading] = useState(false);
   const [photoURL,setPhotoURL] =useState("");
   const  {user}  = useContext(AuthContext);
   const uid = user?.uid;
 
-  console.log(uid)
+
+
   
   const mockapi1 = import.meta.env.VITE_MOCKAPI1;
   const mockapi4 = import.meta.env.VITE_MOCKAPI4;
@@ -55,9 +60,9 @@ const Profile = () =>
   } = useFetch(`https://${mockapi4}/api/users`);
 
   const userForPhotoAndID = usersResult?.find((u)=>u.firebase_uid===uid);
+  console.log(userForPhotoAndID?.avatar)
   useEffect(()=>
   {
-    
     setPhotoURL(userForPhotoAndID?.avatar);
   },[usersResult]);
 
@@ -103,6 +108,7 @@ const myWishlistedDestinations = useMemo(() =>
 
 const handleEdit = useCallback(async (newData) => {
   try {
+    
     setTrips(prev =>
       prev.map(p => p.id === newData.id ? newData : p)
     )
@@ -133,18 +139,38 @@ const handleWishlist = useCallback(async (dest_id) => {
 }, [whishlistIds, localWhishList, uid, whishListDelete, postData])
 
 const handleEditAvatar = async () => {
-  setPhotoURL(image)
-  await editUser(userForPhotoAndID?.id, { firebase_uid: uid, avatar: image })
-  setAvatarForm(false)
+  try
+  {
+    setUploading(true);
+    const url = await uploadImage(image);
+    await updateProfile(auth.currentUser,{photoURL:url});
+    await editUser(userForPhotoAndID?.id,{firebase_uid:uid,avatar:url});
+    setPhotoURL(url)
+  }
+  catch(err)
+  {
+    showErr('upload failed')
+  }
+  finally
+  {
+    setUploading(false);
+    setAvatarForm(false)
+  }
 }
   
-  const loading = tripsLoading || destinationsLoading || whishlistLoading || deleteLoading;
+  const loading = tripsLoading || destinationsLoading || whishlistLoading || deleteLoading || uploading;
   const error = tripsError || destinationsError || whishlistError || deleteError;
 
   if (loading) return <Loader />;
   if (error) return <Page404 message={error} />;
 
 
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setImage(file);
+  }
+};
 
   return (
    <div className='p-5 min-h-screen bg-white dark:bg-gray-900'>
@@ -157,9 +183,21 @@ const handleEditAvatar = async () => {
         src={photoURL || avatar}
         alt="Profile"
         className='w-20 h-20 rounded-full object-cover border dark:border-gray-600'
-        />:<div>
-         <InputField value={image} onChange={(e)=>setImage(e.target.value)} placeHolder={"Enter Image URL"}/>
-         <Button content={"submit"} onClick={handleEditAvatar}/>
+        />:<div className='text-white' >
+<label className="flex items-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors w-fit">
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+  {image ? image.name : "Choose profile photo"}
+ 
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    className="hidden"
+  />
+</label>         <Button content={"submit"} onClick={handleEditAvatar}/>
+
         </div>
       }
       <div className='flex size-2/12'>

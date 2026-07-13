@@ -3,7 +3,7 @@ import useFetch from '../hooks/useFetch';
 import usePost from '../hooks/usePost';
 import Page404 from './Page404';
 import { toast } from 'react-toastify';
-import { showSuccess } from '../utils/toast';
+import { showErr, showSuccess } from '../utils/toast';
 import { AuthContext } from '../../AuthContext';
 
 const TripPlannerForm = ({onChange,onSubmitButton}) => {
@@ -26,8 +26,19 @@ const TripPlannerForm = ({onChange,onSubmitButton}) => {
   const destinations = result?.map((r)=>r.title)
   const handleSubmit = async(e) => {
     e.preventDefault();
+    const departureNumber = new Date(departureDate).getTime();
+    const returnNumber = new Date(returnDate).getTime();
+    const now = new Date().getTime();
+    if(returnNumber<departureDate)
+    {
+      return showErr("Return Date Cannot be before Departure Date");
+    }
+    if(returnNumber<now || departureNumber<now)
+    {
+      return showErr("We do not support time travel unfortunately")
+    }
     const tripData = { destination, departureDate, returnDate, travelers, budget, notes, activities,user_id:uid };
-    console.log(tripData);
+    
     try
     {
         await postData(tripData)

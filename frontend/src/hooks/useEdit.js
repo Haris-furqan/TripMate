@@ -9,7 +9,7 @@ const useEdit = (baseUrl) => {
   const editRecord = async (id, newData) => {
     setLoading(true);
     setError(null);
-    try {
+    try {   
       const response = await axios.put(`${baseUrl}/${id}`, newData);
       setResult(response.data);
       return response.data;
