@@ -28,31 +28,78 @@ import useFetch from '../hooks/useFetch';
   
   
   return (
-    <div className='flex m-5 transition-all duration-300 hover:scale-102 p-3 gap-3 flex-col max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl'>
-  <div>
-    <img src={image} className='rounded-t-2xl w-full object-cover' alt="location image" />
-  </div>
-  <div className='flex items-start flex-col gap-3'>
-    <h2 className='font-bold text-xl text-blue-500'>{title}</h2>
-    <h3 className='font-semibold text-lg text-blue-500'>{location}📍</h3>
-    <p className='text-gray-500 dark:text-gray-400'>{description}</p>
-    <p className='text-gray-700 dark:text-gray-300 font-semibold'>Budget: {customBudget} <span><select  onChange={handleCurrencyChange}  value={currency} className='font-bold text-blue-500'>
-      {currencies.map((curr)=>(<option value={curr}>
-        {curr}
-      </option>))}
-      </select></span></p>
-    <p className='text-green-700 dark:text-green-400 font-semibold'>Season: {season}</p>
-    <p className='text-green-700 dark:text-green-400 font-semibold'>Trip Type: {tripType}</p>
-    <div className='flex w-full justify-between'>
-      <Button content={"View Details"} onClick={() => navigate(`/destination/${id}`)} />
-      <CiHeart
-        onClick={onWishlist}
-        size={40}
-        color={isWishlisted ? "red" : "black"}
-      />
+<div className='group flex m-4 p-4 gap-4 flex-col max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+  <div className='relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800'>
+    <img 
+      src={image} 
+      className='h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105' 
+      alt="destination" 
+    />
+    <div className='absolute top-3 right-3 flex flex-col gap-1.5 items-end'>
+      {tripType && (
+        <span className='px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 rounded-md backdrop-blur-sm shadow-sm'>
+          {tripType}
+        </span>
+      )}
+      {season && (
+        <span className='px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/90 text-white rounded-md backdrop-blur-sm shadow-sm'>
+          ☀️ {season}
+        </span>
+      )}
     </div>
   </div>
-</div>
+
+  <div className='flex items-start flex-col gap-2.5 flex-1'>
+    <div className='flex flex-col gap-1 w-full'>
+      <h2 className='font-extrabold text-xl text-slate-950 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-1'>
+        {title}
+      </h2>
+      <h3 className='font-medium text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate'>
+        <span>📍</span> {location}
+      </h3>
+    </div>
+
+    <p className='text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-1'>
+      {description}
+    </p>
+
+    <div className='flex items-center justify-between w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/40 mt-auto'>
+      <span className='text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider'>Est. Budget</span>
+      <div className='flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-base'>
+        <span>{customBudget}</span>
+        <select 
+          onChange={handleCurrencyChange} 
+          value={currency} 
+          className='text-xs font-bold text-blue-600 dark:text-blue-400 bg-transparent border-none p-0 pr-1 focus:ring-0 cursor-pointer outline-none hover:underline'
+        >
+          {currencies.map((curr) => (
+            <option key={curr} value={curr} className='bg-white dark:bg-slate-900 text-slate-900 dark:text-white'>
+              {curr}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <div className='flex w-full justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800/60 mt-1'>
+      <Button content={"View Details"} onClick={() => navigate(`/destination/${id}`)} />
+      <button 
+        onClick={onWishlist}
+        className='p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 group/btn focus:outline-none'
+        aria-label="Add to wishlist"
+      >
+        <CiHeart
+          size={26}
+          className={`transition-transform duration-200 group-hover/btn:scale-110 ${
+            isWishlisted 
+              ? 'fill-red-500 text-red-500' 
+              : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300'
+          }`}
+        />
+      </button>
+    </div>
+  </div>
+</div>  
   )
 })
 

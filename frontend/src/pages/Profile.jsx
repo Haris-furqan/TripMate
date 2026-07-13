@@ -8,7 +8,7 @@ import EmptyState from '../Components/EmptyState';
 import Page404 from './Page404';
 import useEdit from '../hooks/useEdit';
 import { useState,useEffect } from 'react';
-import { showErr } from '../utils/toast';
+import { showErr, showSuccess } from '../utils/toast';
 import useDelete from '../hooks/useDelete';
 import usePost from '../hooks/usePost';
 import { GoPencil } from "react-icons/go";
@@ -16,8 +16,9 @@ import Button from '../Components/Button';
 import avatar from "../assets/user.png"
 import InputField from '../Components/InputField';
 import uploadImage from '../utils/uploadImage';
-import { updateProfile } from 'firebase/auth';
+import { updateProfile, deleteUser, getAuth, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
 const Profile = () => 
 {
   const [trips,setTrips] = useState([]);
@@ -27,7 +28,9 @@ const Profile = () =>
   const [uploading,setUploading] = useState(false);
   const [photoURL,setPhotoURL] =useState("");
   const  {user}  = useContext(AuthContext);
+  const navigate = useNavigate();
   const uid = user?.uid;
+  getAuth()
 
 
 
@@ -69,6 +72,7 @@ const Profile = () =>
   const {editRecord} = useEdit(`https://${mockapi1}/api/Trips`);
   const {editRecord:editUser} = useEdit(`https://${mockapi4}/api/users`);
 
+  const {deleteRecord:deleteUserRecord,loading:userDeleteLoading,error:userDeleteErr} = useDelete(`https://${mockapi4}/api/users`);
 
   const {deleteRecord,result:deleteResut,loading:deleteLoading,error:deleteError} =  useDelete(`https://${mockapi1}/api/Trips`);
   
@@ -158,8 +162,8 @@ const handleEditAvatar = async () => {
   }
 }
   
-  const loading = tripsLoading || destinationsLoading || whishlistLoading || deleteLoading || uploading;
-  const error = tripsError || destinationsError || whishlistError || deleteError;
+  const loading = tripsLoading || destinationsLoading || whishlistLoading || deleteLoading || uploading || userDeleteLoading;
+  const error = tripsError || destinationsError || whishlistError || deleteError || userDeleteErr;
 
   if (loading) return <Loader />;
   if (error) return <Page404 message={error} />;
@@ -171,6 +175,27 @@ const handleEditAvatar = async () => {
     setImage(file);
   }
 };
+
+const handleDeleteProfile = async() =>
+{
+  try
+  {
+     const password = prompt('Enter your password to confirm deletion')
+    const credential = EmailAuthProvider.credential(auth.currentUser.email, password)
+    await reauthenticateWithCredential(auth.currentUser, credential)
+    
+  await deleteUser(auth.currentUser);
+  console.log("user deleted");
+  await deleteUserRecord(userForPhotoAndID?.id);
+  navigate("/")
+  showSuccess("User Deleted Successfully");
+  }
+  catch(err)
+  {
+    showErr("Profile could not be deleted");
+        console.log(err.code) 
+  }
+}
 
   return (
    <div className='p-5 min-h-screen bg-white dark:bg-gray-900'>
@@ -221,7 +246,7 @@ const handleEditAvatar = async () => {
     ) : (
       <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
         {trips?.map((trip) => (
-          <TripCard key={trip.id} deparature={trip.deparatureDate} arrival={trip.returnDate} {...trip} onEdit={handleEdit} onDelete={() => handleDelete(trip.id)} />
+          <TripCard key={trip.id} deparature={trip.departureDate} arrival={trip.returnDate} {...trip} onEdit={handleEdit} onDelete={() => handleDelete(trip.id)} />
         ))}
       </div>
     )}
@@ -252,6 +277,8 @@ const handleEditAvatar = async () => {
       </div>
     )}
   </section>
+
+  <Button content={"Delete Profile"} onClick={handleDeleteProfile}/>
 </div>
   )
 }
