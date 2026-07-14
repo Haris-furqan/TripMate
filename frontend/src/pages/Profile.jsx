@@ -19,6 +19,11 @@ import uploadImage from '../utils/uploadImage';
 import { updateProfile, deleteUser, getAuth, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 const Profile = () => 
 {
   const [trips,setTrips] = useState([]);
@@ -199,7 +204,7 @@ const handleDeleteProfile = async() =>
 
   return (
    <div className='p-5 min-h-screen bg-white dark:bg-gray-900'>
-  {/* Profile header */}
+  
   <div className='flex items-center gap-4 mb-8'>
     <div className='flex'>
       {
@@ -239,43 +244,69 @@ const handleDeleteProfile = async() =>
   </div>
 
   {/* My Trips */}
-  <section className='mb-10'>
-    <h2 className='font-bold text-xl mb-4 text-gray-800 dark:text-white'>My Trips</h2>
-    {trips?.length === 0 ? (
-      <EmptyState title={"No Trips Planned. Try Planning one" } message="You haven't planned any trips yet." />
-    ) : (
-      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
-        {trips?.map((trip) => (
-          <TripCard key={trip.id} deparature={trip.departureDate} arrival={trip.returnDate} {...trip} onEdit={handleEdit} onDelete={() => handleDelete(trip.id)} />
-        ))}
-      </div>
-    )}
-  </section>
+<section className='mb-10'>
+  <h2 className='font-bold text-xl mb-4 text-gray-800 dark:text-white'>My Trips</h2>
+
+  {trips?.length === 0 ? (
+    <EmptyState title={"No Trips Planned. Try Planning one"} message="You haven't planned any trips yet." />
+  ) : (
+    <Swiper
+      modules={[Navigation, Pagination]}
+      navigation
+      pagination={{ clickable: true }}
+      spaceBetween={20}
+      slidesPerView={1}
+      breakpoints={{
+        640: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 },
+        1280: { slidesPerView: 4 },
+      }}
+    >
+      {trips?.map((trip) => (
+        <SwiperSlide key={trip.id}>
+          <TripCard deparature={trip.departureDate} arrival={trip.returnDate} {...trip} onEdit={handleEdit} onDelete={() => handleDelete(trip.id)} />
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  )}
+</section>
 
   {/* Wishlisted Destinations */}
   <section>
-    <h2 className='font-bold text-xl mb-4 text-gray-800 dark:text-white'>Wishlisted Destinations</h2>
-    {myWishlistedDestinations.length === 0 ? (
-      <EmptyState title="No wishlisted destinations yet." />
-    ) : (
-      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
-        {myWishlistedDestinations.map((dest) => (
-          <DestinationCard
-            key={dest.id}
-            id={dest.id}
-            image={dest.image}
-            title={dest.title}
-            location={dest.location}
-            description={dest.description}
-            budget={dest.budget}
-            season={dest.season}
-            tripType={dest.tripType}
-            isWishlisted={true}
-            onWishlist={() => handleWishlist(dest.id)}
-          />
-        ))}
-      </div>
-    )}
+  <h2 className='font-bold text-xl mb-4 text-gray-800 dark:text-white'>Wishlisted Destinations</h2>
+{myWishlistedDestinations.length === 0 ? (
+  <EmptyState title="No wishlisted destinations yet." />
+) : (
+  <Swiper
+    modules={[Navigation, Pagination]}
+    navigation
+    pagination={{ clickable: true }}
+    spaceBetween={20}
+    slidesPerView={1}
+    breakpoints={{
+      640: { slidesPerView: 2 },
+      1024: { slidesPerView: 3 },
+      1280: { slidesPerView: 4 },
+    }}
+  >
+    {myWishlistedDestinations.map((dest) => (
+      <SwiperSlide key={dest.id}>
+        <DestinationCard
+          id={dest.id}
+          image={dest.image}
+          title={dest.title}
+          location={dest.location}
+          description={dest.description}
+          budget={dest.budget}
+          season={dest.season}
+          tripType={dest.tripType}
+          isWishlisted={true}
+          onWishlist={() => handleWishlist(dest.id)}
+        />
+      </SwiperSlide>
+    ))}
+  </Swiper>
+)}
   </section>
 
   <Button content={"Delete Profile"} onClick={handleDeleteProfile}/>
