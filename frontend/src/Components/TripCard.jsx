@@ -7,7 +7,7 @@ import useFetch from '../hooks/useFetch';
 
 const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, budget, notes, activities, onDelete, onEdit }) => {
   const mockapi1 = import.meta.env.VITE_MOCKAPI1;
-  const { result } = useFetch(`https://${mockapi1}/destinations/`);
+  const { result,loading } = useFetch(`https://${mockapi1}/destinations/`);
 
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
@@ -117,7 +117,11 @@ Generated via Travel Itinerary Planner
   return (
     <div className='m-5 transition-all duration-300 hover:scale-102 flex p-3 gap-3 flex-col max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl'>
       <div>
+          {loading? (
+    <div className='w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-2xl animate-pulse' />
+  ):
         <img src={image} className='rounded-t-2xl w-full h-48 object-cover' alt={`${destination}`} />
+  }
       </div>
       <div className='flex items-start flex-col gap-3 w-full'>
 
