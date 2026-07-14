@@ -103,7 +103,7 @@ const handleDelete = useCallback(async (id) => {
           onEdit={handleEdit}
           onDelete={() => handleDelete(r.id)}
           destination={r.destination}
-          deparature={r.departureDate}
+          departure={r.departureDate}
           arrival={r.returnDate}
           travelers={r.travelers}
           budget={r.budget}

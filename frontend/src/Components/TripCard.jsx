@@ -5,7 +5,7 @@ import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import Button from './Button';
 import useFetch from '../hooks/useFetch';
 
-const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, budget, notes, activities, onDelete, onEdit }) => {
+const TripCard = React.memo(({ id, destination, departure, arrival, travelers, budget, notes, activities, onDelete, onEdit }) => {
   const mockapi1 = import.meta.env.VITE_MOCKAPI1;
   const { result,loading } = useFetch(`https://${mockapi1}/destinations/`);
 
@@ -13,7 +13,7 @@ const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, 
 
 
   const [editDestination, setEditDestination] = useState(destination);
-  const [editDeparture, setEditDeparture] = useState(deparature);
+  const [editDeparture, setEditDeparture] = useState(departure);
   const [editArrival, setEditArrival] = useState(arrival);
   const [editTravelers, setEditTravelers] = useState(travelers);
   const [editBudget, setEditBudget] = useState(budget);
@@ -28,7 +28,7 @@ const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, 
 
   useEffect(() => {
     function getCountdownString() {
-      const targetTimestamp = new Date(deparature).getTime();
+      const targetTimestamp = new Date(departure).getTime();
       const now = Date.now();
       const difference = targetTimestamp - now;
 
@@ -55,14 +55,14 @@ const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, 
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [deparature]);
+  }, [departure]);
 
   const handleSave = () => {
     onEdit({
       id,
       destination: editDestination,
-      deparature: editDeparture, 
-      arrival: editArrival,
+      departureDate: editDeparture, 
+      returnDate: editArrival,
       travelers: editTravelers,
       budget: editBudget,
       notes: editNotes,
@@ -73,7 +73,7 @@ const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, 
 
   const handleCancel = () => {
     setEditDestination(destination);
-    setEditDeparture(deparature);
+    setEditDeparture(departure);
     setEditArrival(arrival);
     setEditTravelers(travelers);
     setEditBudget(budget);
@@ -89,7 +89,7 @@ const TripCard = React.memo(({ id, destination, deparature, arrival, travelers, 
         TRIP ITINERARY SUMMARY          
 =========================================
 🌍 DESTINATION : ${destination}
-📅 DEPARTURE   : ${deparature}
+📅 DEPARTURE   : ${departure}
 ⏳ RETURN      : ${arrival}
 👥 TRAVELERS   : ${travelers} People
 💰 BUDGET      : $${budget}
@@ -174,7 +174,7 @@ Generated via Travel Itinerary Planner
         ) : (
           <>
             <h2 className='font-bold text-xl text-blue-500'>{destination}</h2>
-            <h3 className='text-black dark:text-gray-300 font-semibold text-base'>Departure: {deparature}</h3>
+            <h3 className='text-black dark:text-gray-300 font-semibold text-base'>Departure: {departure}</h3>
             <h3 className='text-black dark:text-gray-300 font-semibold text-base'>Return: {arrival}</h3>
             <h3 className='text-black dark:text-gray-300 font-semibold text-base'>Number of Travelers: {travelers}</h3>
             <h3 className='text-black dark:text-gray-300 font-semibold text-base'>Budget: ${budget}</h3>
