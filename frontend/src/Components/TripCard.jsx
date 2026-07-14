@@ -190,7 +190,7 @@ Generated via Travel Itinerary Planner
           ) : (
             <>
               <Button onClick={() => setIsEditFormOpen(true)} content={<CiEdit size={24} />} />
-              <Button onClick={onDelete} content={<MdOutlineDelete size={24} color='red' />} />
+              <Button onClick={()=>onDelete(id)} content={<MdOutlineDelete size={24} color='red' />} />
             </>
           )}
         </div>

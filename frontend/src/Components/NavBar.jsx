@@ -10,8 +10,7 @@ import { ThemeContext } from '../../ThemeContext'
 import { AuthContext } from '../../AuthContext'
 import useFetch from '../hooks/useFetch'
 import ToggleSwitch from '../Components/ToggleSwitch'
-
-
+import defaultAvatar from "../assets/user.png"
 
 const NavBar = () => {
     const mockapi4 = import.meta.env.VITE_MOCKAPI4; 
@@ -60,7 +59,7 @@ const NavBar = () => {
   <div className='hidden md:flex gap-8 items-center' >
     <ToggleSwitch value={darkMode} onChange={()=>setDarkMode(prev=>!prev)} label={!darkMode ? "Light Mode" : "Dark Mode"} />
   {user?<Button content={"Logout"} onClick={handleLogout} />:<Button content={"Sign in"} onClick={()=>navigate("/login")}/>}
-   {user&& <Link to={"/profile"} className={'transition-all hover:scale-110'}>    <img src={photoURL} className='w-15 h-15 rounded-full object-cover border dark:border-gray-600' alt="" /></Link>}
+   {user&& <Link to={"/profile"} className={'transition-all hover:scale-110'}>    <img src={photoURL?photoURL:defaultAvatar} className='w-15 h-15 rounded-full object-cover border dark:border-gray-600' alt="" /></Link>}
   </div>
 
   {/* Hamburger — mobile only */}

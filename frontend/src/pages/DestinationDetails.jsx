@@ -10,6 +10,11 @@ import { useParams } from 'react-router-dom';
 import useDelete from '../hooks/useDelete';
 import DestinationMap from '../Components/DestinationMap';
 import WeatherCard from '../Components/WeatherCard';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 const DestinationDetails = () => {
     const {id} = useParams();
    
@@ -145,18 +150,26 @@ const DestinationDetails = () => {
 
         {/* Image Gallery */}
         <div className='bg-white dark:bg-gray-800 rounded-2xl shadow p-6'>
-          <h2 className='font-bold text-xl mb-3 text-gray-800 dark:text-white'>Image Gallery</h2>
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
-            {imageGallery?.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt={`${title} ${i + 1}`}
-                className='w-full h-36 object-cover rounded-xl'
-              />
-            ))}
-          </div>
-        </div>
+  <h2 className='font-bold text-xl mb-3 text-gray-800 dark:text-white'>Image Gallery</h2>
+  <Swiper
+    modules={[Navigation, Pagination]}
+    navigation
+    pagination={{ clickable: true }}
+    spaceBetween={10}
+    slidesPerView={1}
+    className='rounded-xl'
+  >
+    {imageGallery?.map((src, i) => (
+      <SwiperSlide key={i}>
+        <img
+          src={src}
+          alt={`${title} ${i + 1}`}
+          className='w-full h-64 object-cover rounded-xl'
+        />
+      </SwiperSlide>
+    ))}
+  </Swiper>
+</div>
 
       </div>
 

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { showErr, showSuccess } from '../utils/toast';
 import { AuthContext } from '../../AuthContext';
 
+
 const TripPlannerForm = ({onChange,onSubmitButton}) => {
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState("");
@@ -22,27 +23,40 @@ const TripPlannerForm = ({onChange,onSubmitButton}) => {
   const mockapi4 = import.meta.env.VITE_MOCKAPI4;
 
   const {result,error,loading} = useFetch(`https://${mockapi1}/api/destinations`,5000)
-  const {postData} = usePost(`https://${mockapi1}/api/Trips`)
+  const {postData,data:tripPostData} = usePost(`https://${mockapi1}/api/Trips`)
   const destinations = result?.map((r)=>r.title)
+
   const handleSubmit = async(e) => {
     e.preventDefault();
     const departureNumber = new Date(departureDate).getTime();
     const returnNumber = new Date(returnDate).getTime();
     const now = new Date().getTime();
-    if(returnNumber<departureDate)
+    if(returnNumber<departureNumber)
     {
       return showErr("Return Date Cannot be before Departure Date");
     }
     if(returnNumber<now || departureNumber<now)
     {
+      
       return showErr("We do not support time travel unfortunately")
+      
+    }
+    if(budget===0)
+    {
+      return showErr("Budget Cant be 0(gareeb)")
+    }
+
+    if(destination==="")
+    {
+      return showErr("Destination Cant be empty")
     }
     const tripData = { destination, departureDate, returnDate, travelers, budget, notes, activities,user_id:uid };
     
     try
     {
-        await postData(tripData)
-        onChange(prev => [...prev,tripData])
+        const result = await postData(tripData)
+        console.log(result)
+        onChange(prev => [...prev,result])
         showSuccess("Trip Has Been Made")
     }
     catch(err)

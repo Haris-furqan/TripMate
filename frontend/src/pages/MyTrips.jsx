@@ -35,6 +35,8 @@ const MyTrips = () => {
  
   const {user} =useContext(AuthContext);
   const uid = user.uid;
+
+
  const handleUpcoming = useCallback(() => {
   setShowUpComing(prev => !prev)
   const today = new Date().toLocaleDateString('en-CA')
@@ -51,6 +53,7 @@ const handleEdit = useCallback(async (newData) => {
 }, [editRecord])
 
 useEffect(() => {
+  console.log("trips result changedx")
   const filtered = result?.filter(r => r.user_id === uid)
   setTrips(filtered)
 }, [result])
@@ -63,8 +66,9 @@ useEffect(()=>
 
 const handleDelete = useCallback(async (id) => {
   try {
-    await deleteRecord(id)
     setTrips(prev => prev.filter(p => p.id != id))
+    console.log(id+" got deleted")
+    await deleteRecord(id)
   } catch(err) {
     showErr("Could not delete trip")
   }
@@ -92,7 +96,7 @@ const handleDelete = useCallback(async (id) => {
   <div className='Trip-cards grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4'>
     {showUpComing ?
       tripCurrentItems?.map((r) => (
-        <div>
+        <div  key={r.id} >
         <TripCard
           key={r.id}
           id={r.id}
