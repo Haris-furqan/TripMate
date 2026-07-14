@@ -61,7 +61,7 @@ useEffect(() => {
 useEffect(()=>
   {
     window.scrollTo(0,0);
-  })
+  },[])
     
 
 const handleDelete = useCallback(async (id) => {

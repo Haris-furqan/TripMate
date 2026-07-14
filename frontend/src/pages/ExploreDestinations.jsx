@@ -53,7 +53,7 @@ const ExploreDestinations = () => {
     useEffect(()=>
       {
         window.scrollTo(0,0);
-      })
+      },[])
       
 
   const {user} = useContext(AuthContext);
